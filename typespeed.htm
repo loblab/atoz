@@ -39,6 +39,12 @@
       crossorigin="anonymous"
     ></script>
     <script>
+      const version = "Ver 0.2 by LobLab 11/22/2020";
+      var target = "abcdefghijklmnopqrstuvwxyz";
+      var histr = "";
+      var start_ts = 0;
+      var current_ts = 0;
+
       function formatDate(date) {
         var hh = date.getHours();
         var mm = date.getMinutes();
@@ -48,41 +54,46 @@
         return strDate + " " + strTime;
       }
 
+      function onKey(key, ts) {
+        current_ts = ts;
+        if (key == target.charAt(0)) {
+          start_ts = current_ts;
+          histr = key;
+          $("#rptime").text("");
+        } else {
+          histr += key;
+          if (histr.length > target.length) {
+            histr = histr.substring(histr.length - target.length);
+            $("#rptime").text("");
+          }
+        }
+        $("#current").text(key);
+        $("#history").text(histr);
+      }
+
+      function report() {
+        let dur = parseFloat(current_ts - start_ts) / 1000;
+        let msg = dur.toFixed(2) + "s";
+        $("#current").text(msg);
+        var now = new Date();
+        msg = formatDate(now);
+        $("#rptime").text(msg);
+      }
+
       $(function () {
-        const version = "Ver 0.2 by LobLab 11/22/2020";
         $("#version").text(version);
-        var t1 = 0;
-        var hist = "";
+        $("#target").val(target);
+
+        $("#target").change(function () {
+          target = $("#target").val();
+        });
+
         $(window).keypress(function (e) {
           //console.log(e);
           if (e.target.id == "target") return;
-          let target = $("#target").val();
-          let maxlen = target.length;
-          let ch1 = target.charAt(0);
-          let key = e.key;
-          let ts = e.timeStamp;
-          if (key == ch1) {
-            t1 = ts;
-            hist = key;
-            $("#rptime").text("");
-          } else {
-            hist += key;
-            var l = hist.length;
-            if (l > maxlen) {
-              hist = hist.substring(l - maxlen);
-              $("#rptime").text("");
-            }
-          }
-          $("#current").text(key);
-          $("#history").text(hist);
-          if (hist == target) {
-            var dur = parseFloat(ts - t1) / 1000;
-            var msg = dur.toFixed(2) + "s";
-            $("#current").text(msg);
-
-            var now = new Date();
-            msg = formatDate(now);
-            $("#rptime").text(msg);
+          onKey(e.key, e.timeStamp);
+          if (histr == target) {
+            report();
           }
         });
       });
@@ -90,7 +101,7 @@
   </head>
   <body>
     Target:<br />
-    <input type="text" id="target" name="target" size="32" value="abcdefghijklmnopqrstuvwxyz" />
+    <input type="text" id="target" name="target" size="32" />
     <br />
     <div id="history">Type till match Target</div>
     <div id="current"></div>
