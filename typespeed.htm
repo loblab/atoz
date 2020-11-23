@@ -7,16 +7,15 @@
       body {
         background: #242;
         color: #ccc;
-        overflow: hidden;
+        overflow: scroll;
         text-align: center;
-        margin: 20px;
+        margin: 10px;
       }
       div {
         border: none;
         margin: 0;
         left: 0px;
         width: 100%;
-        text-align: center;
       }
       #history {
         font-size: 60px;
@@ -25,12 +24,16 @@
         font-size: 180px;
         color: #fcc;
       }
+      #chart {
+        font-size: 24px;
+      }
       #rptime {
         font-size: 68px;
       }
       #version {
         font-size: 12px;
         color: #888;
+        margin-top: 6px;
       }
     </style>
     <script
@@ -39,9 +42,10 @@
       crossorigin="anonymous"
     ></script>
     <script>
-      const version = "Ver 0.2 by LobLab 11/22/2020";
+      const version = "Ver 0.3 by LobLab 11/23/2020";
       var target = "abcdefghijklmnopqrstuvwxyz";
-      var histr = "";
+      var hist_key = "";
+      var hist_ts = [];
       var start_ts = 0;
       var current_ts = 0;
 
@@ -58,26 +62,43 @@
         current_ts = ts;
         if (key == target.charAt(0)) {
           start_ts = current_ts;
-          histr = key;
+          hist_ts = [ts];
+          hist_key = key;
           $("#rptime").text("");
+          $("#chart").html("");
         } else {
-          histr += key;
-          if (histr.length > target.length) {
-            histr = histr.substring(histr.length - target.length);
+          hist_key += key;
+          hist_ts.push(ts);
+          if (hist_key.length > target.length) {
+            hist_key = hist_key.substring(hist_key.length - target.length);
+            hist_ts.shift();
             $("#rptime").text("");
+            $("#chart").html("");
           }
         }
         $("#current").text(key);
-        $("#history").text(histr);
+        $("#history").text(hist_key);
       }
 
       function report() {
         let dur = parseFloat(current_ts - start_ts) / 1000;
         let msg = dur.toFixed(2) + "s";
         $("#current").text(msg);
-        var now = new Date();
+        let now = new Date();
         msg = formatDate(now);
         $("#rptime").text(msg);
+        let i;
+        msg = "";
+        for (i = 0; i < hist_ts.length - 1; i++) {
+          let t1 = hist_ts[i];
+          let t2 = hist_ts[i + 1];
+          let c1 = hist_key.charAt(i);
+          let c2 = hist_key.charAt(i + 1);
+          let key = c1 + "->" + c2;
+          let val = ((t2 - t1) / 1000.).toFixed(2) + "s";
+          msg += key + ": " + val + "<br/>";
+        }
+        $("#chart").html(msg);
       }
 
       $(function () {
@@ -92,7 +113,7 @@
           //console.log(e);
           if (e.target.id == "target") return;
           onKey(e.key, e.timeStamp);
-          if (histr == target) {
+          if (hist_key == target) {
             report();
           }
         });
@@ -106,7 +127,7 @@
     <div id="history">Type till match Target</div>
     <div id="current"></div>
     <div id="rptime"></div>
+    <div id="chart"></div>
     <div id="version"></div>
-    <br />
   </body>
 </html>
