@@ -96,6 +96,8 @@
               yAxes: [
                 {
                   ticks: {
+                    fontColor: "#999",
+                    fontSize: 16,
                     beginAtZero: true,
                   },
                 },
@@ -127,6 +129,12 @@
           dataset.data = [0];
         });
         myChart.update();
+      }
+
+      function bannerChart(msg) {
+        for (let ch of msg) {
+          addToChart(ch, ch.charCodeAt());
+        }
       }
 
       function onKey(key, ts) {
@@ -181,6 +189,7 @@
         $("#target").val(target);
 
         initChart();
+        bannerChart("Type till match Target");
 
         $("#target").change(function () {
           target = $("#target").val();
