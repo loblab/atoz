@@ -15,7 +15,6 @@
         border: none;
         margin: 0;
         left: 0px;
-        width: 100%;
       }
       #history {
         font-size: 60px;
@@ -25,7 +24,8 @@
         color: #fcc;
       }
       #chart {
-        font-size: 24px;
+        margin-left: 20%;
+        margin-right: 20%;
       }
       #rptime {
         font-size: 68px;
@@ -41,13 +41,20 @@
       integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
       crossorigin="anonymous"
     ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"
+      integrity="sha256-t9UJPrESBeG2ojKTIcFLPGF7nHi2vEc7f5A2KpH/UBU="
+      crossorigin="anonymous"
+    ></script>
     <script>
-      const version = "Ver 0.3 by LobLab 11/23/2020";
+      const version = "Ver 0.4 by LobLab 11/24/2020";
       var target = "abcdefghijklmnopqrstuvwxyz";
       var hist_key = "";
       var hist_ts = [];
       var start_ts = 0;
+      var prev_ts = 0;
       var current_ts = 0;
+      var myChart = null;
 
       function formatDate(date) {
         var hh = date.getHours();
@@ -58,6 +65,70 @@
         return strDate + " " + strTime;
       }
 
+      function initChart() {
+        var ctx = document.getElementById("myChart").getContext("2d");
+        myChart = new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: [],
+            datasets: [
+              {
+                data: [],
+                backgroundColor: "rgba(255, 99, 132, 0.4)",
+                borderColor: "rgba(255, 99, 132, 1)",
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            legend: {
+              display: false,
+            },
+            scales: {
+              xAxes: [
+                {
+                  ticks: {
+                    fontColor: "#ddd",
+                    fontSize: 24,
+                  },
+                },
+              ],
+              yAxes: [
+                {
+                  ticks: {
+                    beginAtZero: true,
+                  },
+                },
+              ],
+            },
+          },
+        });
+      }
+
+      function addToChart(label, val) {
+        myChart.data.labels.push(label);
+        myChart.data.datasets.forEach((dataset) => {
+          dataset.data.push(val);
+        });
+        myChart.update();
+      }
+
+      function removeFromChart() {
+        myChart.data.labels.shift();
+        myChart.data.datasets.forEach((dataset) => {
+          dataset.data.shift();
+        });
+        myChart.update();
+      }
+
+      function resetChart(key) {
+        myChart.data.labels = [key];
+        myChart.data.datasets.forEach((dataset) => {
+          dataset.data = [0];
+        });
+        myChart.update();
+      }
+
       function onKey(key, ts) {
         current_ts = ts;
         if (key == target.charAt(0)) {
@@ -65,19 +136,23 @@
           hist_ts = [ts];
           hist_key = key;
           $("#rptime").text("");
-          $("#chart").html("");
+          //$("#chart").html("");
+          resetChart(key);
         } else {
           hist_key += key;
           hist_ts.push(ts);
+          addToChart(key, ts - prev_ts);
           if (hist_key.length > target.length) {
             hist_key = hist_key.substring(hist_key.length - target.length);
             hist_ts.shift();
             $("#rptime").text("");
-            $("#chart").html("");
+            //$("#chart").html("");
+            removeFromChart();
           }
         }
         $("#current").text(key);
-        $("#history").text(hist_key);
+        //TODO $("#history").text(hist_key);
+        prev_ts = ts;
       }
 
       function report() {
@@ -98,12 +173,14 @@
           let val = ((t2 - t1) / 1000.0).toFixed(2) + "s";
           msg += key + ": " + val + "<br/>";
         }
-        $("#chart").html(msg);
+        //$("#chart").html(msg);
       }
 
       $(function () {
         $("#version").text(version);
         $("#target").val(target);
+
+        initChart();
 
         $("#target").change(function () {
           target = $("#target").val();
@@ -124,10 +201,11 @@
     Target:<br />
     <input type="text" id="target" name="target" size="32" />
     <br />
-    <div id="history">Type till match Target</div>
+    <div id="chart">
+      <canvas id="myChart"></canvas>
+    </div>
     <div id="current"></div>
     <div id="rptime"></div>
-    <div id="chart"></div>
     <div id="version"></div>
   </body>
 </html>
