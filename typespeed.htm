@@ -50,7 +50,7 @@
       crossorigin="anonymous"
     ></script>
     <script>
-      const version = "Ver 0.4 by LobLab 11/25/2020";
+      const version = "Ver 0.5 by LobLab 11/26/2020";
       var target = "abcdefghijklmnopqrstuvwxyz";
       var hist_key = "";
       var hist_ts = [];
@@ -58,6 +58,34 @@
       var prev_ts = 0;
       var current_ts = 0;
       var hitChart = null;
+
+      var keyGroup = ["1qaz", "2wsx", "3edc", "4rfv5tgb", 
+        "6yhn7ujm", "8ik,", "9ol.", "0p;/", " "];
+      var colorGroup = [
+          "rgba(180, 99, 132, 0.5)",
+          "rgba(205, 99, 132, 0.6)",
+          "rgba(230, 99, 132, 0.7)",
+          "rgba(255, 99, 132, 0.8)",
+
+          "rgba(132, 99, 255, 0.8)",
+          "rgba(132, 99, 230, 0.7)",
+          "rgba(132, 99, 205, 0.6)",
+          "rgba(132, 99, 185, 0.5)",
+
+          "rgba(99, 99, 99, 0.4)"
+      ];
+      var keyColor = {};
+
+      function initColor() {
+        for (let i = 0; i < keyGroup.length; i++) {
+          let str = keyGroup[i];
+          let color = colorGroup[i];
+          for (let ch of str) {
+            keyColor[ch] = color;
+          }
+        }
+        //console.log(keyColor);
+      }
 
       function formatDate(date) {
         var hh = date.getHours();
@@ -77,8 +105,9 @@
             datasets: [
               {
                 data: [],
-                backgroundColor: "rgba(255, 99, 132, 0.4)",
-                borderColor: "rgba(255, 99, 132, 1)",
+                //backgroundColor: "rgba(255, 99, 132, 0.4)",
+                backgroundColor: [],
+                borderColor: "rgba(128, 128, 128, 1)",
                 borderWidth: 1,
               },
             ],
@@ -115,6 +144,8 @@
         hitChart.data.labels.push(label);
         hitChart.data.datasets.forEach((dataset) => {
           dataset.data.push(val);
+          let color = keyColor[label.toLowerCase()];
+          dataset.backgroundColor.push(color);
         });
         hitChart.update();
       }
@@ -123,14 +154,16 @@
         hitChart.data.labels.shift();
         hitChart.data.datasets.forEach((dataset) => {
           dataset.data.shift();
+          dataset.backgroundColor.shift();
         });
         hitChart.update();
       }
 
       function resetChart(key) {
-        hitChart.data.labels = [key];
+        hitChart.data.labels = [];
         hitChart.data.datasets.forEach((dataset) => {
-          dataset.data = [0];
+          dataset.data = [];
+          dataset.backgroundColor = [];
         });
         hitChart.update();
       }
@@ -154,6 +187,7 @@
           hist_key = key;
           $("#rptime").text("");
           resetChart(key);
+          addToChart(key, 0);
         } else {
           hist_key += key;
           hist_ts.push(ts);
@@ -183,6 +217,7 @@
         $("#version").text(version);
         $("#target").val(target);
 
+        initColor();
         initChart();
         bannerChart("Type till match Target");
 
