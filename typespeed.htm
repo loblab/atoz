@@ -23,11 +23,11 @@
         font-size: 180px;
         color: #fcc;
       }
-      #chart {
+      #chart-div {
         margin-left: 22%;
         margin-right: 22%;
       }
-      #myChart {
+      #hit-chart {
         height: 240px !important;
       }
       #rptime {
@@ -57,7 +57,7 @@
       var start_ts = 0;
       var prev_ts = 0;
       var current_ts = 0;
-      var myChart = null;
+      var hitChart = null;
 
       function formatDate(date) {
         var hh = date.getHours();
@@ -69,8 +69,8 @@
       }
 
       function initChart() {
-        var ctx = document.getElementById("myChart").getContext("2d");
-        myChart = new Chart(ctx, {
+        var ctx = document.getElementById("hit-chart").getContext("2d");
+        hitChart = new Chart(ctx, {
           type: "bar",
           data: {
             labels: [],
@@ -112,27 +112,27 @@
       }
 
       function addToChart(label, val) {
-        myChart.data.labels.push(label);
-        myChart.data.datasets.forEach((dataset) => {
+        hitChart.data.labels.push(label);
+        hitChart.data.datasets.forEach((dataset) => {
           dataset.data.push(val);
         });
-        myChart.update();
+        hitChart.update();
       }
 
       function removeFromChart() {
-        myChart.data.labels.shift();
-        myChart.data.datasets.forEach((dataset) => {
+        hitChart.data.labels.shift();
+        hitChart.data.datasets.forEach((dataset) => {
           dataset.data.shift();
         });
-        myChart.update();
+        hitChart.update();
       }
 
       function resetChart(key) {
-        myChart.data.labels = [key];
-        myChart.data.datasets.forEach((dataset) => {
+        hitChart.data.labels = [key];
+        hitChart.data.datasets.forEach((dataset) => {
           dataset.data = [0];
         });
-        myChart.update();
+        hitChart.update();
       }
 
       function bannerChart(msg) {
@@ -153,7 +153,6 @@
           hist_ts = [ts];
           hist_key = key;
           $("#rptime").text("");
-          //$("#chart").html("");
           resetChart(key);
         } else {
           hist_key += key;
@@ -163,7 +162,6 @@
             hist_key = hist_key.substring(hist_key.length - target.length);
             hist_ts.shift();
             $("#rptime").text("");
-            //$("#chart").html("");
             removeFromChart();
           }
         }
@@ -179,18 +177,6 @@
         let now = new Date();
         msg = formatDate(now);
         $("#rptime").text(msg);
-        let i;
-        msg = "";
-        for (i = 0; i < hist_ts.length - 1; i++) {
-          let t1 = hist_ts[i];
-          let t2 = hist_ts[i + 1];
-          let c1 = hist_key.charAt(i);
-          let c2 = hist_key.charAt(i + 1);
-          let key = c1 + "->" + c2;
-          let val = ((t2 - t1) / 1000.0).toFixed(2) + "s";
-          msg += key + ": " + val + "<br/>";
-        }
-        //$("#chart").html(msg);
       }
 
       $(function () {
@@ -219,8 +205,8 @@
     Target:<br />
     <input type="text" id="target" name="target" size="32" />
     <br />
-    <div id="chart">
-      <canvas id="myChart"></canvas>
+    <div id="chart-div">
+      <canvas id="hit-chart"></canvas>
     </div>
     <div id="current"></div>
     <div id="rptime"></div>
