@@ -24,8 +24,11 @@
         color: #fcc;
       }
       #chart {
-        margin-left: 20%;
-        margin-right: 20%;
+        margin-left: 22%;
+        margin-right: 22%;
+      }
+      #myChart {
+        height: 240px !important;
       }
       #rptime {
         font-size: 68px;
@@ -47,7 +50,7 @@
       crossorigin="anonymous"
     ></script>
     <script>
-      const version = "Ver 0.4 by LobLab 11/24/2020";
+      const version = "Ver 0.4 by LobLab 11/25/2020";
       var target = "abcdefghijklmnopqrstuvwxyz";
       var hist_key = "";
       var hist_ts = [];
@@ -85,11 +88,12 @@
               display: false,
             },
             scales: {
+              maintainAspectRatio: false,
               xAxes: [
                 {
                   ticks: {
                     fontColor: "#ddd",
-                    fontSize: 24,
+                    fontSize: 22,
                   },
                 },
               ],
@@ -132,8 +136,13 @@
       }
 
       function bannerChart(msg) {
+        let delay = 0;
         for (let ch of msg) {
-          addToChart(ch, ch.charCodeAt());
+          let val = ch.charCodeAt();
+          delay += val;
+          setTimeout(function() {
+            addToChart(ch, val);
+          }, delay);
         }
       }
 
