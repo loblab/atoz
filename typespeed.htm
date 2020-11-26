@@ -24,8 +24,8 @@
         color: #fcc;
       }
       #chart-div {
-        margin-left: 22%;
-        margin-right: 22%;
+        margin-left: 18%;
+        margin-right: 18%;
       }
       #hit-chart {
         height: 240px !important;
@@ -59,20 +59,20 @@
       var current_ts = 0;
       var hitChart = null;
 
-      var keyGroup = ["1qaz", "2wsx", "3edc", "4rfv5tgb", 
+      var keyGroup = ["1qaz", "2wsx", "3edc", "4rfv5tgb",
         "6yhn7ujm", "8ik,", "9ol.", "0p;/", " "];
       var colorGroup = [
-          "rgba(180, 99, 132, 0.5)",
-          "rgba(205, 99, 132, 0.6)",
-          "rgba(230, 99, 132, 0.7)",
-          "rgba(255, 99, 132, 0.8)",
+          "rgba(180, 99, 112, 0.5)",
+          "rgba(205, 99, 112, 0.6)",
+          "rgba(230, 99, 112, 0.7)",
+          "rgba(255, 99, 112, 0.8)",
 
-          "rgba(132, 99, 255, 0.8)",
-          "rgba(132, 99, 230, 0.7)",
-          "rgba(132, 99, 205, 0.6)",
-          "rgba(132, 99, 185, 0.5)",
+          "rgba(112, 99, 255, 0.8)",
+          "rgba(112, 99, 230, 0.7)",
+          "rgba(112, 99, 205, 0.6)",
+          "rgba(112, 99, 185, 0.5)",
 
-          "rgba(99, 99, 99, 0.4)"
+          "rgba(99, 99, 99, 0.5)"
       ];
       var keyColor = {};
 
@@ -105,7 +105,6 @@
             datasets: [
               {
                 data: [],
-                //backgroundColor: "rgba(255, 99, 132, 0.4)",
                 backgroundColor: [],
                 borderColor: "rgba(128, 128, 128, 1)",
                 borderWidth: 1,
@@ -122,7 +121,8 @@
                 {
                   ticks: {
                     fontColor: "#ddd",
-                    fontSize: 22,
+                    fontSize: 28,
+                    fontFamily: "Arial",
                   },
                 },
               ],
