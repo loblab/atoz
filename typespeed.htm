@@ -168,7 +168,7 @@
         inputDur.push(dur);
         hitChart.data.labels.push(key);
         hitChart.data.datasets.forEach((dataset) => {
-          dataset.data.push(dur);
+          dataset.data.push(dur / 1000.0);
           let color = keyColor[key.toLowerCase()];
           dataset.backgroundColor.push(color);
         });
