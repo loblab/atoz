@@ -210,12 +210,13 @@
         let now = new Date();
         msg = formatDate(now);
         $("#rpt-time").text(msg);
+        saveScore(inputKeys, inputDur);
       }
 
       function saveScore(keys, score) {
         score.shift();
         let obj = { keys: keys, score: score };
-        $.ajax("/score", {
+        $.ajax("/api/score", {
           data : JSON.stringify(obj),
           contentType : 'application/json',
           type : 'POST',
@@ -229,7 +230,7 @@
         $("#version").text(version);
         $("#target").val(target);
 
-        saveScore("abcd", [0, 100, 200, 300]);
+        //saveScore("abcd", [0, 100, 200, 300]);
         initColor();
         initChart();
         welcome("Type till match Target");

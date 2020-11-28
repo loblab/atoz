@@ -10,8 +10,6 @@ services:
         image: loblab/atoz
         build:
             context: .
-            args:
-                - HOME=/app
         hostname: atoz
         container_name: lab-atoz
         restart: "always"
