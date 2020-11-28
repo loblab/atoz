@@ -45,9 +45,6 @@
         margin-left: 18%;
         margin-right: 18%;
       }
-      #hit-chart {
-        height: 240px !important;
-      }
       #main-msg {
         font-size: 180px;
         color: #fdd;
@@ -136,11 +133,12 @@
             ],
           },
           options: {
+            maintainAspectRatio: true,
+            aspectRatio: 4,
             legend: {
               display: false,
             },
             scales: {
-              maintainAspectRatio: false,
               xAxes: [
                 {
                   ticks: {
