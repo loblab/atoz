@@ -212,10 +212,24 @@
         $("#rpt-time").text(msg);
       }
 
+      function saveScore(keys, score) {
+        score.shift();
+        let obj = { keys: keys, score: score };
+        $.ajax("/score", {
+          data : JSON.stringify(obj),
+          contentType : 'application/json',
+          type : 'POST',
+          success: function(data) {
+            console.log(data);
+          }
+        });
+      }
+
       $(function () {
         $("#version").text(version);
         $("#target").val(target);
 
+        saveScore("abcd", [0, 100, 200, 300]);
         initColor();
         initChart();
         welcome("Type till match Target");
