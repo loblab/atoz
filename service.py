@@ -5,9 +5,42 @@ from flask import Flask
 from flask import send_file
 from flask import jsonify, request
 import logging
+from influxdb import InfluxDBClient
 
 app = Flask(__name__)
+db = None
 logging.basicConfig(level=logging.DEBUG)
+
+def init_db():
+    global db
+    host = "influxdb"
+    port = 8086
+    user = ""
+    pswd = ""
+    data = "atoz"
+    db = InfluxDBClient(host, port, user, pswd, data, timeout=5)
+
+def close_db():
+    global db
+    db.close()
+
+def write_db(points):
+    global db
+    db.write_points(points)
+
+def query_db(q):
+    global db
+    return db.query(q)
+
+def count_db(cond):
+    q = "select count(val) from speed where %s" % cond
+    app.logger.info(q)
+    r = query_db(q)
+    points = r.get_points()
+    for point in points:
+        app.logger.info(point)
+        return point["count"]
+    return 0
 
 @app.route("/")
 def main():
@@ -27,29 +60,27 @@ def echo():
 
 @app.route('/api/score', methods=['POST'])
 def api_score():
+    init_db()
     req = request.json
     ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+    keys = req["keys"]
     resp = {}
     try:
-        save_score(req["keys"], req["score"], ip)
+        dur = save_score(keys, req["score"], ip)
+        (rank, total) = query_rank(keys, dur)
+        resp["total"] = total
+        resp["rank"] = rank
         resp["status"] = "OK"
     except Exception as e:
         msg = str(e)
         app.logger.error(msg)
         resp["status"] = "ERR"
         resp["msg"] = msg
+    close_db()
     return jsonify(resp)
 
-from influxdb import InfluxDBClient
 
 def save_score(keys, score, ip):
-    host = "influxdb"
-    port = 8086
-    user = ""
-    pswd = ""
-    data = "atoz"
-    db = InfluxDBClient(host, port, user, pswd, data, timeout=5)
-
     now = time.time()
     ts = int(now * 1e9)
     points = []
@@ -90,6 +121,30 @@ def save_score(keys, score, ip):
     }
     points.append(point)
     #app.logger.info(points)
-    db.write_points(points)
-    db.close()
+    write_db(points)
+    return total
+
+@app.route('/api/rank/<key>/<dur>', methods=['GET'])
+def api_rank(key, dur):
+    init_db()
+    resp = {}
+    try:
+        (rank, total) = query_rank(key, dur)
+        resp["status"] = "OK"
+        resp["total"] = total
+        resp["rank"] = rank
+    except Exception as e:
+        msg = str(e)
+        app.logger.error(msg)
+        resp["status"] = "ERR"
+        resp["msg"] = msg
+    close_db();
+    return jsonify(resp)
+
+def query_rank(key, dur):
+    cond = "\"key\"='%s'" % key
+    total = count_db(cond)
+    cond += " and \"val\"<=%s" % dur
+    rank = count_db(cond)
+    return (rank, total)
 

@@ -4,6 +4,7 @@ How fast can you type a to z?
 
 ## History
 
+- 0.8 (11/28/2020): Show rank
 - 0.7 (11/28/2020): Save every key speed to database
 - 0.6 (11/28/2020): As a flask web service; count hit durations as final score
 - 0.5 (11/26/2020): Show different key with different color (by finger)

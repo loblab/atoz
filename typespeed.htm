@@ -16,10 +16,6 @@
         margin: 0;
         left: 0px;
       }
-      #main-msg {
-        font-size: 180px;
-        color: #fcc;
-      }
       #chart-div {
         margin-left: 18%;
         margin-right: 18%;
@@ -27,8 +23,16 @@
       #hit-chart {
         height: 240px !important;
       }
+      #main-msg {
+        font-size: 180px;
+        color: #fdd;
+      }
+      #rank {
+        font-size: 48px;
+        color: #ecc;
+      }
       #rpt-time {
-        font-size: 68px;
+        font-size: 36px;
       }
       #version {
         font-size: 12px;
@@ -47,7 +51,7 @@
       crossorigin="anonymous"
     ></script>
     <script>
-      const version = "Ver 0.7 by LobLab 11/28/2020";
+      const version = "Ver 0.8 by LobLab 11/28/2020";
       var target = "abcdefghijklmnopqrstuvwxyz";
       var inputKeys = "";
       var inputDur = [];
@@ -183,6 +187,7 @@
       function onHitKey(key, ts) {
         $("#main-msg").text(key);
         $("#rpt-time").text("");
+        $("#rank").text("");
         if (key == target.charAt(0)) {
           resetStatus();
           saveKey(key, 0);
@@ -222,6 +227,8 @@
           type : 'POST',
           success: function(data) {
             console.log(data);
+            let msg = "Rank: " + data.rank + "/" + data.total;
+            $("#rank").text(msg);
           }
         });
       }
@@ -256,6 +263,7 @@
       <canvas id="hit-chart"></canvas>
     </div>
     <div id="main-msg"></div>
+    <div id="rank"></div>
     <div id="rpt-time"></div>
     <div id="version"></div>
   </body>
