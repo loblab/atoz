@@ -89,7 +89,7 @@ def save_score(keys, score, ip):
         }
     }
     points.append(point)
-    app.logger.info(points)
+    #app.logger.info(points)
     db.write_points(points)
     db.close()
 
