@@ -140,6 +140,7 @@
       }
 
       function saveKey(key, dur) {
+        dur = Math.floor(dur); //Safari is float
         inputKeys += key;
         inputDur.push(dur);
         hitChart.data.labels.push(key);

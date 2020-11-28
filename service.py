@@ -34,11 +34,11 @@ def query_db(q):
 
 def count_db(cond):
     q = "select count(val) from speed where %s" % cond
-    app.logger.info(q)
+    #app.logger.info(q)
     r = query_db(q)
     points = r.get_points()
     for point in points:
-        app.logger.info(point)
+        #app.logger.info(point)
         return point["count"]
     return 0
 
@@ -85,15 +85,15 @@ def save_score(keys, score, ip):
     ts = int(now * 1e9)
     points = []
 
-    app.logger.info(ip)
-    app.logger.info(keys)
-    app.logger.info(score)
+    #app.logger.info(ip)
+    #app.logger.info(keys)
+    #app.logger.info(score)
     total = 0
     for i in range(0, len(score)):
         key = keys[i:i+2]
-        val = score[i]
+        val = int(score[i])
         total += val
-        app.logger.info("%s: %d ms", key, val)
+        #app.logger.info("%s: %d ms", key, val)
         point = {
             "measurement": "speed",
             "time": ts,
@@ -107,7 +107,7 @@ def save_score(keys, score, ip):
         }
         points.append(point)
 
-    app.logger.info("%s: %d ms", keys, total)
+    #app.logger.info("%s: %d ms", keys, total)
     point = {
         "measurement": "speed",
         "time": ts,
