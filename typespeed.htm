@@ -7,9 +7,10 @@
       body {
         background: #242;
         color: #ccc;
-        overflow: scroll;
+        overflow-x: hidden;
+        overflow-y: auto;
         text-align: center;
-        margin: 10px;
+        margin: 20px 10px 10px 10px;
       }
       div {
         border: none;
@@ -24,6 +25,7 @@
         margin-left: 4px;
         margin-right: 4px;
         font-size: 125%;
+        font-family: monospace;
       }
       #target:disabled {
         background: #232;
@@ -144,7 +146,7 @@
                   ticks: {
                     fontColor: "#ddd",
                     fontSize: 28,
-                    fontFamily: "Arial",
+                    fontFamily: "monospace",
                   },
                 },
               ],
