@@ -1,0 +1,28 @@
+version: "3.5"
+
+networks:
+    default:
+        external:
+            name: homelab
+
+services:
+    atoz:
+        image: loblab/atoz
+        build:
+            context: .
+            args:
+                - HOME=/app
+        hostname: atoz
+        container_name: lab-atoz
+        restart: "always"
+        volumes:
+            - ".:/app"
+            - "/var/log/homelab/atoz:/log"
+        ports:
+            - "1128:1128"
+        environment:
+            - LC_ALL=C.UTF-8
+            - LANG=C.UTF-8
+            - FLASK_APP=/app/service.py
+            - FLASK_ENV=development
+        command: [ "flask", "run", "--host=0.0.0.0", "--port=1128" ]
