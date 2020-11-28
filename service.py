@@ -50,7 +50,11 @@ def main():
 def favicon():
     return send_file('favicon.ico', mimetype='image/vnd.microsoft.icon')
 
-@app.route('/debug', methods=['POST'])
+@app.route("/dev")
+def dev_ver():
+    return send_file('dev.htm')
+
+@app.route('/api/debug', methods=['POST'])
 def echo():
     req = request.json
     ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)

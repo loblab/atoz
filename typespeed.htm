@@ -16,6 +16,29 @@
         margin: 0;
         left: 0px;
       }
+      #target {
+        text-align: center;
+        border-radius: 8px;
+        padding-left: 8px;
+        padding-right: 8px;
+        margin-left: 4px;
+        margin-right: 4px;
+        font-size: 125%;
+      }
+      #target:disabled {
+        background: #232;
+        color: #eee;
+        border: none;
+      }
+      input[type=button] {
+        border-radius: 6px;
+        cursor: pointer;
+        background: #797;
+        border-color: #aaa;
+        color: #612;
+        font-size: 80%;
+        padding: 1px;
+      }
       #chart-div {
         margin-left: 18%;
         margin-right: 18%;
@@ -51,7 +74,7 @@
       crossorigin="anonymous"
     ></script>
     <script>
-      const version = "Ver 0.8 by LobLab 11/28/2020";
+      const version = "Ver 0.9 by LobLab 11/28/2020";
       var target = "abcdefghijklmnopqrstuvwxyz";
       var inputKeys = "";
       var inputDur = [];
@@ -236,6 +259,7 @@
 
       $(function () {
         $("#version").text(version);
+        $("#target").prop("disabled", true);
         $("#target").val(target);
 
         //saveScore("abcd", [0, 100, 200, 300]);
@@ -247,19 +271,35 @@
           target = $("#target").val();
         });
 
+        $("#target").focusout(function () {
+          $("#target").prop("disabled", true);
+          target = $("#target").val();
+        });
+
+        $("#change").click(function () {
+          $("#target").prop("disabled", false);
+          $("#target").select();
+        });
+
         $(window).keypress(function (e) {
           //console.log(e);
-          if (e.target.id == "target")
+          if (e.target.id == "target") {
+            if (e.key === 'Enter' || e.keyCode === 13) {
+              $("#target").prop("disabled", true);
+              $("#target").blur();
+              target = $("#target").val();
+            }
             return;
+          }
           onHitKey(e.key, e.timeStamp);
         });
       });
     </script>
   </head>
   <body>
-    Target:<br />
-    <input type="text" id="target" name="target" size="32" />
-    <br />
+    Target:
+    <input type="text" id="target" name="target" size="28" />
+    <input type="button" id="change" name="change" value="Change" />
     <div id="chart-div">
       <canvas id="hit-chart"></canvas>
     </div>
