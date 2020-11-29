@@ -2,7 +2,15 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Type Speed Testing</title>
+    <title>Typing Speed Test</title>
+    <meta name="description" content="Typing speed test online, A to Z, with rank in 10 seconds" />
+    <meta
+      name="keywords"
+      content="Typing test, Typing speed test, Typing speed game, a to z,
+    abcdefghijklmnopqrstuvwxyz, Typing quick test"
+    />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <style>
       body {
         background: #242;
@@ -32,7 +40,7 @@
         color: #eee;
         border: none;
       }
-      input[type=button] {
+      input[type="button"] {
         border-radius: 6px;
         cursor: pointer;
         background: #797;
@@ -80,20 +88,19 @@
       var prevTs = 0;
       var hitChart = null;
 
-      var keyGroup = ["1qaz", "2wsx", "3edc", "4rfv5tgb",
-        "6yhn7ujm", "8ik,", "9ol.", "0p;/", " "];
+      var keyGroup = ["1qaz", "2wsx", "3edc", "4rfv5tgb", "6yhn7ujm", "8ik,", "9ol.", "0p;/", " "];
       var colorGroup = [
-          "rgba(180, 99, 112, 0.5)",
-          "rgba(205, 99, 112, 0.6)",
-          "rgba(230, 99, 112, 0.7)",
-          "rgba(255, 99, 112, 0.8)",
+        "rgba(180, 99, 112, 0.5)",
+        "rgba(205, 99, 112, 0.6)",
+        "rgba(230, 99, 112, 0.7)",
+        "rgba(255, 99, 112, 0.8)",
 
-          "rgba(112, 99, 255, 0.8)",
-          "rgba(112, 99, 230, 0.7)",
-          "rgba(112, 99, 205, 0.6)",
-          "rgba(112, 99, 185, 0.5)",
+        "rgba(112, 99, 255, 0.8)",
+        "rgba(112, 99, 230, 0.7)",
+        "rgba(112, 99, 205, 0.6)",
+        "rgba(112, 99, 185, 0.5)",
 
-          "rgba(99, 99, 99, 0.5)"
+        "rgba(99, 99, 99, 0.5)",
       ];
       var keyColor = {};
 
@@ -202,7 +209,7 @@
         for (let ch of msg) {
           let val = ch.charCodeAt();
           delay += val;
-          setTimeout(function() {
+          setTimeout(function () {
             saveKey(ch, val);
           }, delay);
         }
@@ -246,14 +253,14 @@
         score.shift();
         let obj = { keys: keys, score: score };
         $.ajax("/api/score", {
-          data : JSON.stringify(obj),
-          contentType : 'application/json',
-          type : 'POST',
-          success: function(data) {
+          data: JSON.stringify(obj),
+          contentType: "application/json",
+          type: "POST",
+          success: function (data) {
             console.log(data);
             let msg = "Rank: " + data.rank + "/" + data.total;
             $("#rank").text(msg);
-          }
+          },
         });
       }
 
@@ -284,7 +291,7 @@
         $(window).keypress(function (e) {
           //console.log(e);
           if (e.target.id == "target") {
-            if (e.key === 'Enter' || e.keyCode === 13) {
+            if (e.key === "Enter" || e.keyCode === 13) {
               $("#target").prop("disabled", true);
               $("#target").blur();
               target = $("#target").val();
