@@ -26,7 +26,7 @@ def close_db():
 
 def write_db(points):
     global db
-    db.write_points(points)
+    db.write_points(points, time_precision='u')
 
 def query_db(q):
     global db
@@ -63,9 +63,9 @@ def echo():
     return jsonify(req)
 
 @app.route('/api/score', methods=['POST'])
-def api_score():
+def api_put_score():
     now = time.time()
-    ts = int(now * 1e9)
+    ts = int(now * 1e6)
     init_db()
     req = request.json
     ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
@@ -87,7 +87,6 @@ def api_score():
     close_db()
     return jsonify(resp)
 
-
 def save_score(ts, keys, durs, ip):
     points = []
 
@@ -95,7 +94,7 @@ def save_score(ts, keys, durs, ip):
     #app.logger.info(keys)
     #app.logger.info(durs)
     total = 0
-    for i in range(0, len(durs)):
+    for i in range(len(durs)):
         key = keys[i:i+2]
         val = int(durs[i])
         total += val
@@ -168,4 +167,60 @@ def query_rank(key, dur):
     cond += " and \"val\"<=%s" % dur
     rank = count_db(cond)
     return (rank, total)
+
+@app.route('/api/record/<key>', methods=['GET'])
+def api_record(key):
+    init_db()
+    resp = {}
+    try:
+        ts, dur, durs = query_record(key)
+        resp["status"] = "OK"
+        resp["time"] = ts
+        resp["dur"] = dur
+        resp["keys"] = key
+        resp["durs"] = durs
+    except Exception as e:
+        msg = str(e)
+        app.logger.error(msg)
+        resp["status"] = "ERR"
+        resp["msg"] = msg
+    close_db();
+    return jsonify(resp)
+
+def query_record(key):
+    cond = " \"key\"='%s'" % key
+    only1 = " order by time desc limit 1"
+    q = "select val from record where" + cond + only1
+    app.logger.debug(q)
+    r = query_db(q)
+    points = r.get_points()
+    for point in points:
+        #app.logger.info(point)
+        dur = point["val"]
+        ts = point["time"]
+        durs = query_score(ts, key)
+        return (ts, dur, durs)
+    return 0
+
+def query_score(ts, keys):
+    cond = " \"time\"='%s'" % ts
+    q = "select \"key\", \"val\" from speed where" + cond
+    app.logger.debug(q)
+    r = query_db(q)
+    points = r.get_points()
+    tmp = {}
+    for point in points:
+        app.logger.debug(point)
+        dur = point["val"]
+        key = point["key"]
+        tmp[key] = dur
+        app.logger.debug("%s => %d" % (key, dur))
+    app.logger.debug(tmp)
+    durs = []
+    for i in range(len(keys) - 1):
+        key = keys[i:i+2]
+        val = tmp[key]
+        durs.append(val)
+    app.logger.debug(durs)
+    return durs
 
