@@ -19,10 +19,12 @@ How fast can you type A to Z? [Test online and rank!](https://atoz.loblab.top/)
 - Can change Target, it is default to A to Z (abcdefghijklmnopqrstuvwxyz)
 - Upload score (total & every key) of the completed round to database
 - Show rank among the uploaded scores
+- Show record and latest score on chart
 
 ## History
 
-- 0.9 (11/28/2020): Unlock to change Target
+- 1.0 (11/29/2020): Show record and latest one
+- 0.9 (11/29/2020): Unlock to change Target
 - 0.8 (11/28/2020): Show rank
 - 0.7 (11/28/2020): Save every key hit speed to database
 - 0.6 (11/28/2020): As a flask web service; sum key hit durations as final score

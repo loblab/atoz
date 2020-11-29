@@ -81,12 +81,14 @@
       crossorigin="anonymous"
     ></script>
     <script>
-      const version = "Ver 0.9 by LobLab 11/29/2020";
+      const version = "Ver 1.0 by LobLab 11/29/2020";
       var target = "abcdefghijklmnopqrstuvwxyz";
       var inputKeys = "";
       var inputDurs = [];
       var prevTs = 0;
       var hitChart = null;
+      var latestSeries = 0;
+      var recordSeries = 0;
 
       var keyGroup = ["1qaz", "2wsx", "3edc", "4rfv5tgb", "6yhn7ujm", "8ik,", "9ol.", "0p;/", " "];
       var colorGroup = [
@@ -132,10 +134,26 @@
             labels: [],
             datasets: [
               {
+                label: "Current",
                 data: [],
                 backgroundColor: [],
                 borderColor: "rgba(128, 128, 128, 1)",
                 borderWidth: 1,
+              },
+              {
+                label: "Record",
+                type: "line",
+                data: [],
+                backgroundColor: "rgba(200, 255, 200, 0.8)",
+                borderColor: "rgba(255, 255, 255, 1)",
+                borderWidth: 1,
+              },
+              {
+                label: "Latest",
+                type: "line",
+                data: [],
+                borderColor: "rgba(255, 255, 255, 1)",
+                borderWidth: 2,
               },
             ],
           },
@@ -167,6 +185,8 @@
             },
           },
         });
+        recordSeries = 1;
+        latestSeries = 2;
       }
 
       function saveKey(key, dur) {
@@ -174,11 +194,21 @@
         inputKeys += key;
         inputDurs.push(dur);
         hitChart.data.labels.push(key);
-        hitChart.data.datasets.forEach((dataset) => {
-          dataset.data.push(dur / 1000.0);
-          let color = keyColor[key.toLowerCase()];
-          dataset.backgroundColor.push(color);
-        });
+
+        let current = hitChart.data.datasets[0];
+        current.data.push(dur / 1000.0);
+        let color = keyColor[key.toLowerCase()];
+        current.backgroundColor.push(color);
+
+        hitChart.update();
+      }
+
+      function drawSeries(index, data) {
+        let dset = hitChart.data.datasets[index].data;
+        dset.push(0);
+        for (let d of data) {
+          dset.push(d / 1000.0);
+        }
         hitChart.update();
       }
 
@@ -186,10 +216,9 @@
         inputKeys = inputKeys.substring(inputKeys.length - target.length);
         inputDurs.shift();
         hitChart.data.labels.shift();
-        hitChart.data.datasets.forEach((dataset) => {
-          dataset.data.shift();
-          dataset.backgroundColor.shift();
-        });
+        let current = hitChart.data.datasets[0];
+        current.data.shift();
+        current.backgroundColor.shift();
         hitChart.update();
       }
 
@@ -197,9 +226,9 @@
         inputDurs = [];
         inputKeys = "";
         hitChart.data.labels = [];
+        hitChart.data.datasets[0].backgroundColor = [];
         hitChart.data.datasets.forEach((dataset) => {
           dataset.data = [];
-          dataset.backgroundColor = [];
         });
         hitChart.update();
       }
@@ -257,9 +286,15 @@
           contentType: "application/json",
           type: "POST",
           success: function (data) {
-            console.log(data);
+            //console.log(data);
             let msg = "Rank: " + data.rank + "/" + data.samples;
             $("#rank").text(msg);
+            if (data.record) {
+              drawSeries(recordSeries, data.record);
+            }
+            if (data.latest) {
+              drawSeries(latestSeries, data.latest);
+            }
           },
         });
       }
@@ -269,10 +304,12 @@
         $("#target").prop("disabled", true);
         $("#target").val(target);
 
-        //saveScore("abcd", [0, 100, 200, 300]);
+        //debug saveScore("abcd", [0, 100, 200, 300]);
         initColor();
         initChart();
         welcome("Type till match Target");
+        //debug drawSeries(1, [100, 80, 90, 50, 50, 60]);
+        //debug drawSeries(2, [40, 60, 30, 20, 30, 40]);
 
         $("#target").change(function () {
           target = $("#target").val();

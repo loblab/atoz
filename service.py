@@ -78,11 +78,11 @@ def api_put_score():
         dur = save_score(ts, keys, req["durs"], ip)
         (rank, samples) = query_rank(keys, dur)
         record = query_record(keys)
-        recent = query_recent(keys, ip, ts * 1000)
+        latest = query_latest(keys, ip, ts * 1000)
         resp["samples"] = samples
         resp["rank"] = rank
         resp["record"] = record
-        resp["recent"] = recent
+        resp["latest"] = latest
         resp["status"] = "OK"
     except Exception as e:
         msg = str(e)
@@ -204,13 +204,13 @@ def query_record(key):
         return durs
     return None
 
-@app.route('/api/recent/<key>', methods=['GET'])
-def api_recent(key):
+@app.route('/api/latest/<key>', methods=['GET'])
+def api_latest(key):
     init_db()
     ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
     resp = {}
     try:
-        durs = query_recent(key, ip)
+        durs = query_latest(key, ip)
         resp["status"] = "OK"
         resp["keys"] = key
         resp["durs"] = durs
@@ -222,7 +222,7 @@ def api_recent(key):
     close_db();
     return jsonify(resp)
 
-def query_recent(key, ip, now=None):
+def query_latest(key, ip, now=None):
     cond = "\"key\"='%s' and \"ip\"='%s'" % (key, ip)
     if now is not None:
         cond += " and \"time\" < %d" % now
