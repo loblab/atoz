@@ -76,9 +76,11 @@ def api_put_score():
     resp = {}
     try:
         dur = save_score(ts, keys, req["durs"], ip)
-        (rank, total) = query_rank(keys, dur)
-        resp["total"] = total
+        (rank, samples) = query_rank(keys, dur)
+        (ts0, dur0, durs0) = query_record(keys)
+        resp["samples"] = samples
         resp["rank"] = rank
+        resp["record"] = durs0
         resp["status"] = "OK"
     except Exception as e:
         msg = str(e)
@@ -150,9 +152,9 @@ def api_rank(key, dur):
     init_db()
     resp = {}
     try:
-        (rank, total) = query_rank(key, dur)
+        (rank, samples) = query_rank(key, dur)
         resp["status"] = "OK"
-        resp["total"] = total
+        resp["samples"] = samples
         resp["rank"] = rank
     except Exception as e:
         msg = str(e)
