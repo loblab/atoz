@@ -11,13 +11,16 @@ app = Flask(__name__)
 db = None
 logging.basicConfig(level=logging.DEBUG)
 
+DB_NAME = "atoz"
+TAB_NAME = "score"
+
 def init_db():
     global db
     host = "influxdb"
     port = 8086
     user = ""
     pswd = ""
-    data = "atoz"
+    data = DB_NAME
     db = InfluxDBClient(host, port, user, pswd, data, timeout=5)
 
 def close_db():
@@ -33,7 +36,7 @@ def query_db(q):
     return db.query(q)
 
 def count_db(cond):
-    q = "select count(val) from speed where %s" % cond
+    q = "select count(val) from %s where %s" % (TAB_NAME, cond)
     #app.logger.info(q)
     r = query_db(q)
     points = r.get_points()
@@ -74,8 +77,6 @@ def api_put_score():
     try:
         dur = save_score(ts, keys, req["durs"], ip)
         (rank, total) = query_rank(keys, dur)
-        if rank == 1:
-            save_record(ts, keys, dur, ip)
         resp["total"] = total
         resp["rank"] = rank
         resp["status"] = "OK"
@@ -100,7 +101,7 @@ def save_score(ts, keys, durs, ip):
         total += val
         #app.logger.info("%s: %d ms", key, val)
         point = {
-            "measurement": "speed",
+            "measurement": TAB_NAME,
             "time": ts,
             "tags": {
                 "ip": ip,
@@ -114,7 +115,7 @@ def save_score(ts, keys, durs, ip):
 
     #app.logger.info("%s: %d ms", keys, total)
     point = {
-        "measurement": "speed",
+        "measurement": TAB_NAME,
         "time": ts,
         "tags": {
             "ip": ip,
@@ -188,15 +189,14 @@ def api_record(key):
     return jsonify(resp)
 
 def query_record(key):
-    cond = " \"key\"='%s'" % key
-    only1 = " order by time desc limit 1"
-    q = "select val from record where" + cond + only1
-    app.logger.debug(q)
+    cond = "\"key\"='%s'" % key
+    q = "select min(\"val\") as dur from %s where %s" % (TAB_NAME, cond)
+    #app.logger.debug(q)
     r = query_db(q)
     points = r.get_points()
     for point in points:
         #app.logger.info(point)
-        dur = point["val"]
+        dur = point["dur"]
         ts = point["time"]
         durs = query_score(ts, key)
         return (ts, dur, durs)
@@ -204,23 +204,23 @@ def query_record(key):
 
 def query_score(ts, keys):
     cond = " \"time\"='%s'" % ts
-    q = "select \"key\", \"val\" from speed where" + cond
-    app.logger.debug(q)
+    q = "select \"key\", \"val\" from %s where %s" % (TAB_NAME, cond)
+    #app.logger.debug(q)
     r = query_db(q)
     points = r.get_points()
     tmp = {}
     for point in points:
-        app.logger.debug(point)
+        #app.logger.debug(point)
         dur = point["val"]
         key = point["key"]
         tmp[key] = dur
-        app.logger.debug("%s => %d" % (key, dur))
-    app.logger.debug(tmp)
+        #app.logger.debug("%s => %d" % (key, dur))
+    #app.logger.debug(tmp)
     durs = []
     for i in range(len(keys) - 1):
         key = keys[i:i+2]
         val = tmp[key]
         durs.append(val)
-    app.logger.debug(durs)
+    #app.logger.debug(durs)
     return durs
 
