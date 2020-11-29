@@ -64,14 +64,18 @@ def echo():
 
 @app.route('/api/score', methods=['POST'])
 def api_score():
+    now = time.time()
+    ts = int(now * 1e9)
     init_db()
     req = request.json
     ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
     keys = req["keys"]
     resp = {}
     try:
-        dur = save_score(keys, req["score"], ip)
+        dur = save_score(ts, keys, req["score"], ip)
         (rank, total) = query_rank(keys, dur)
+        if rank == 1:
+            save_record(ts, keys, dur, ip)
         resp["total"] = total
         resp["rank"] = rank
         resp["status"] = "OK"
@@ -84,9 +88,7 @@ def api_score():
     return jsonify(resp)
 
 
-def save_score(keys, score, ip):
-    now = time.time()
-    ts = int(now * 1e9)
+def save_score(ts, keys, score, ip):
     points = []
 
     #app.logger.info(ip)
@@ -127,6 +129,21 @@ def save_score(keys, score, ip):
     #app.logger.info(points)
     write_db(points)
     return total
+
+def save_record(ts, keys, dur, ip):
+    app.logger.info("Record of %s: %d ms", keys, dur)
+    points = [{
+        "measurement": "record",
+        "time": ts,
+        "tags": {
+            "ip": ip,
+            "key": keys
+        },
+        "fields": {
+            "val": dur
+        }
+    }]
+    write_db(points)
 
 @app.route('/api/rank/<key>/<dur>', methods=['GET'])
 def api_rank(key, dur):
