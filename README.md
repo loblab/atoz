@@ -1,6 +1,14 @@
-# Type speed testing
+# Type speed testing: A to Z
 
-How fast can you type a to z?
+How fast can you type A to Z? [Test online and rank](https://atoz.loblab.top/)
+
+- Platform: Chrome, Firefox, Safari (IE may not work well)
+- Ver: 0.9
+- Updated: 11/29/2020
+- Created: 11/22/2020
+- Author: loblab
+
+![Screenshot](https://raw.githubusercontent.com/loblab/atoz/main/screenshot.png)
 
 ## History
 
