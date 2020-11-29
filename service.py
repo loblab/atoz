@@ -77,10 +77,12 @@ def api_put_score():
     try:
         dur = save_score(ts, keys, req["durs"], ip)
         (rank, samples) = query_rank(keys, dur)
-        (ts0, dur0, durs0) = query_record(keys)
+        record = query_record(keys)
+        recent = query_recent(keys, ip, ts * 1000)
         resp["samples"] = samples
         resp["rank"] = rank
-        resp["record"] = durs0
+        resp["record"] = record
+        resp["recent"] = recent
         resp["status"] = "OK"
     except Exception as e:
         msg = str(e)
@@ -176,10 +178,8 @@ def api_record(key):
     init_db()
     resp = {}
     try:
-        ts, dur, durs = query_record(key)
+        durs = query_record(key)
         resp["status"] = "OK"
-        resp["time"] = ts
-        resp["dur"] = dur
         resp["keys"] = key
         resp["durs"] = durs
     except Exception as e:
@@ -201,8 +201,43 @@ def query_record(key):
         dur = point["dur"]
         ts = point["time"]
         durs = query_score(ts, key)
-        return (ts, dur, durs)
-    return 0
+        return durs
+    return None
+
+@app.route('/api/recent/<key>', methods=['GET'])
+def api_recent(key):
+    init_db()
+    ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+    resp = {}
+    try:
+        durs = query_recent(key, ip)
+        resp["status"] = "OK"
+        resp["keys"] = key
+        resp["durs"] = durs
+    except Exception as e:
+        msg = str(e)
+        app.logger.error(msg)
+        resp["status"] = "ERR"
+        resp["msg"] = msg
+    close_db();
+    return jsonify(resp)
+
+def query_recent(key, ip, now=None):
+    cond = "\"key\"='%s' and \"ip\"='%s'" % (key, ip)
+    if now is not None:
+        cond += " and \"time\" < %d" % now
+    only1 = "order by time desc limit 1"
+    q = "select val from %s where %s %s" % (TAB_NAME, cond, only1)
+    app.logger.debug(q)
+    r = query_db(q)
+    points = r.get_points()
+    for point in points:
+        app.logger.info(point)
+        dur = point["val"]
+        ts = point["time"]
+        durs = query_score(ts, key)
+        return durs
+    return None
 
 def query_score(ts, keys):
     cond = " \"time\"='%s'" % ts
