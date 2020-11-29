@@ -72,7 +72,7 @@ def api_score():
     keys = req["keys"]
     resp = {}
     try:
-        dur = save_score(ts, keys, req["score"], ip)
+        dur = save_score(ts, keys, req["durs"], ip)
         (rank, total) = query_rank(keys, dur)
         if rank == 1:
             save_record(ts, keys, dur, ip)
@@ -88,16 +88,16 @@ def api_score():
     return jsonify(resp)
 
 
-def save_score(ts, keys, score, ip):
+def save_score(ts, keys, durs, ip):
     points = []
 
     #app.logger.info(ip)
     #app.logger.info(keys)
-    #app.logger.info(score)
+    #app.logger.info(durs)
     total = 0
-    for i in range(0, len(score)):
+    for i in range(0, len(durs)):
         key = keys[i:i+2]
-        val = int(score[i])
+        val = int(durs[i])
         total += val
         #app.logger.info("%s: %d ms", key, val)
         point = {

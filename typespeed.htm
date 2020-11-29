@@ -84,7 +84,7 @@
       const version = "Ver 0.9 by LobLab 11/29/2020";
       var target = "abcdefghijklmnopqrstuvwxyz";
       var inputKeys = "";
-      var inputDur = [];
+      var inputDurs = [];
       var prevTs = 0;
       var hitChart = null;
 
@@ -172,7 +172,7 @@
       function saveKey(key, dur) {
         dur = Math.floor(dur); //Safari is float
         inputKeys += key;
-        inputDur.push(dur);
+        inputDurs.push(dur);
         hitChart.data.labels.push(key);
         hitChart.data.datasets.forEach((dataset) => {
           dataset.data.push(dur / 1000.0);
@@ -184,7 +184,7 @@
 
       function dropKey() {
         inputKeys = inputKeys.substring(inputKeys.length - target.length);
-        inputDur.shift();
+        inputDurs.shift();
         hitChart.data.labels.shift();
         hitChart.data.datasets.forEach((dataset) => {
           dataset.data.shift();
@@ -194,7 +194,7 @@
       }
 
       function resetStatus() {
-        inputDur = [];
+        inputDurs = [];
         inputKeys = "";
         hitChart.data.labels = [];
         hitChart.data.datasets.forEach((dataset) => {
@@ -236,8 +236,8 @@
 
       function report() {
         let dur = 0;
-        //console.log(inputDur);
-        for (let d of inputDur) {
+        //console.log(inputDurs);
+        for (let d of inputDurs) {
           dur += d;
         }
         dur /= 1000.0;
@@ -246,12 +246,12 @@
         let now = new Date();
         msg = formatDate(now);
         $("#rpt-time").text(msg);
-        saveScore(inputKeys, inputDur);
+        saveScore(inputKeys, inputDurs);
       }
 
-      function saveScore(keys, score) {
-        score.shift();
-        let obj = { keys: keys, score: score };
+      function saveScore(keys, durs) {
+        durs.shift();
+        let obj = { keys: keys, durs: durs };
         $.ajax("/api/score", {
           data: JSON.stringify(obj),
           contentType: "application/json",
