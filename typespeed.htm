@@ -288,13 +288,20 @@
           success: function (data) {
             //console.log(data);
             let msg = "Rank: " + data.rank + "/" + data.samples;
-            $("#rank").text(msg);
+            let dur = 0;
             if (data.record) {
               drawSeries(recordSeries, data.record);
+              for (let d of data.record) {
+                dur += d;
+              }
             }
             if (data.latest) {
               drawSeries(latestSeries, data.latest);
             }
+            if (dur) {
+              msg += " (Record: " + (dur / 1000.0).toFixed(2) + "s)";
+            }
+            $("#rank").text(msg);
           },
         });
       }
