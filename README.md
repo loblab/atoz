@@ -23,6 +23,7 @@ How fast can you type A to Z? [Test online and rank!](https://atoz.loblab.top/)
 
 ## History
 
+- 1.1 (11/30/2020): Relative size: elements auto fit window
 - 1.0 (11/29/2020): Show record and latest one
 - 0.9 (11/29/2020): Unlock to change Target
 - 0.8 (11/28/2020): Show rank

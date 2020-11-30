@@ -10,7 +10,7 @@
     abcdefghijklmnopqrstuvwxyz, Typing quick test"
     />
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
       body {
         background: #242;
@@ -19,6 +19,7 @@
         overflow-y: auto;
         text-align: center;
         margin: 20px 10px 10px 10px;
+        font-size: 3vh;
       }
       div {
         border: none;
@@ -32,7 +33,7 @@
         padding-right: 8px;
         margin-left: 4px;
         margin-right: 4px;
-        font-size: 125%;
+        font-size: 3.5vh;
         font-family: monospace;
       }
       #target:disabled {
@@ -46,26 +47,30 @@
         background: #797;
         border-color: #aaa;
         color: #612;
-        font-size: 80%;
+        font-size: 2.5vh;
         padding: 1px;
       }
       #chart-div {
-        margin-left: 18%;
-        margin-right: 18%;
+      }
+      #hit-chart {
+        width: 80vw !important;
+        height: 35vh !important;
+        min-width: 720px;
+        margin: auto;
       }
       #main-msg {
-        font-size: 180px;
+        font-size: 28vh;
         color: #fdd;
       }
       #rank {
-        font-size: 48px;
+        font-size: 7vh;
         color: #ecc;
       }
       #rpt-time {
-        font-size: 36px;
+        font-size: 5.5vh;
       }
       #version {
-        font-size: 12px;
+        font-size: 2.2vh;
         color: #888;
         margin-top: 6px;
       }
@@ -81,7 +86,7 @@
       crossorigin="anonymous"
     ></script>
     <script>
-      const version = "Ver 1.0 by LobLab 11/29/2020";
+      const version = "Ver 1.1 by LobLab 11/30/2020";
       var target = "abcdefghijklmnopqrstuvwxyz";
       var inputKeys = "";
       var inputDurs = [];
@@ -158,8 +163,7 @@
             ],
           },
           options: {
-            maintainAspectRatio: true,
-            aspectRatio: 4,
+            maintainAspectRatio: false,
             legend: {
               display: false,
             },
