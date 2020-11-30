@@ -14,7 +14,7 @@ logging.basicConfig(level=logging.DEBUG)
 DB_NAME = "atoz"
 TAB_NAME = "score"
 
-def init_db():
+def open_db():
     global db
     host = "influxdb"
     port = 8086
@@ -69,7 +69,7 @@ def echo():
 def api_put_score():
     now = time.time()
     ts = int(now * 1e6)
-    init_db()
+    open_db()
     req = request.json
     ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
     keys = req["keys"]
@@ -151,7 +151,7 @@ def save_record(ts, keys, dur, ip):
 
 @app.route('/api/rank/<key>/<dur>', methods=['GET'])
 def api_rank(key, dur):
-    init_db()
+    open_db()
     resp = {}
     try:
         (rank, samples) = query_rank(key, dur)
@@ -175,7 +175,7 @@ def query_rank(key, dur):
 
 @app.route('/api/record/<key>', methods=['GET'])
 def api_record(key):
-    init_db()
+    open_db()
     resp = {}
     try:
         durs = query_record(key)
@@ -206,7 +206,7 @@ def query_record(key):
 
 @app.route('/api/latest/<key>', methods=['GET'])
 def api_latest(key):
-    init_db()
+    open_db()
     ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
     resp = {}
     try:

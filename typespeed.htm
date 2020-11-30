@@ -47,7 +47,7 @@
         background: #797;
         border-color: #aaa;
         color: #612;
-        font-size: 2.5vh;
+        font-size: 2.2vh;
         padding: 1px;
       }
       #chart-div {
@@ -55,7 +55,7 @@
       #hit-chart {
         width: 80vw !important;
         height: 35vh !important;
-        min-width: 720px;
+        min-width: 480px;
         margin: auto;
       }
       #main-msg {
@@ -131,6 +131,14 @@
         return strDate + " " + strTime;
       }
 
+      function setAxesFont() {
+        let w = $(window).width();
+        let h = $(window).height();
+        //console.log("Resize: " + w + " x " + h);
+        hitChart.options.scales.xAxes[0].ticks.fontSize = Math.min(w / 32, h / 16);
+        hitChart.options.scales.yAxes[0].ticks.fontSize = Math.min(w / 48, h / 40);
+      }
+
       function initChart() {
         var ctx = document.getElementById("hit-chart").getContext("2d");
         hitChart = new Chart(ctx, {
@@ -172,7 +180,7 @@
                 {
                   ticks: {
                     fontColor: "#ddd",
-                    fontSize: 28,
+                    //fontSize: 28,
                     fontFamily: "monospace",
                   },
                 },
@@ -181,7 +189,7 @@
                 {
                   ticks: {
                     fontColor: "#999",
-                    fontSize: 16,
+                    //fontSize: 16,
                     beginAtZero: true,
                   },
                 },
@@ -318,6 +326,7 @@
         //debug saveScore("abcd", [0, 100, 200, 300]);
         initColor();
         initChart();
+        setAxesFont();
         welcome("Type till match Target");
         //debug drawSeries(1, [100, 80, 90, 50, 50, 60]);
         //debug drawSeries(2, [40, 60, 30, 20, 30, 40]);
@@ -348,6 +357,9 @@
           }
           onHitKey(e.key, e.timeStamp);
         });
+
+        $(window).resize(setAxesFont);
+
       });
     </script>
   </head>
