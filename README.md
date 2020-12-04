@@ -3,8 +3,8 @@
 How fast can you type A to Z? [Test online and rank!](https://atoz.loblab.top/)
 
 - Platform: Chrome, Firefox, Safari (IE may not work well)
-- Ver: 1.2
-- Updated: 12/4/2020
+- Ver: 1.3
+- Updated: 12/5/2020
 - Created: 11/22/2020
 - Author: loblab
 
@@ -23,6 +23,7 @@ How fast can you type A to Z? [Test online and rank!](https://atoz.loblab.top/)
 
 ## History
 
+- 1.3 (12/ 5/2020): Save user agent and query latest by it
 - 1.2 (12/ 4/2020): Prompt to play on PC if open in mobile devices
 - 1.1 (11/30/2020): Relative size: elements auto fit window
 - 1.0 (11/29/2020): Show record and latest one

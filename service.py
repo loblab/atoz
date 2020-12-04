@@ -72,13 +72,14 @@ def api_put_score():
     open_db()
     req = request.json
     ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+    ua = request.user_agent.string
     keys = req["keys"]
     resp = {}
     try:
-        dur = save_score(ts, keys, req["durs"], ip)
+        dur = save_score(ts, keys, req["durs"], ip, ua)
         (rank, samples) = query_rank(keys, dur)
         record = query_record(keys)
-        latest = query_latest(keys, ip, ts * 1000)
+        latest = query_latest(keys, ip, ua, ts * 1000)
         resp["samples"] = samples
         resp["rank"] = rank
         resp["record"] = record
@@ -92,7 +93,7 @@ def api_put_score():
     close_db()
     return jsonify(resp)
 
-def save_score(ts, keys, durs, ip):
+def save_score(ts, keys, durs, ip, ua):
     points = []
 
     #app.logger.info(ip)
@@ -108,8 +109,8 @@ def save_score(ts, keys, durs, ip):
             "measurement": TAB_NAME,
             "time": ts,
             "tags": {
-                "ip": ip,
-                "key": key
+                "key": key,
+                "ip": ip
             },
             "fields": {
                 "val": val
@@ -122,8 +123,9 @@ def save_score(ts, keys, durs, ip):
         "measurement": TAB_NAME,
         "time": ts,
         "tags": {
+            "key": keys,
             "ip": ip,
-            "key": keys
+            "ua": ua
         },
         "fields": {
             "val": total
@@ -208,9 +210,10 @@ def query_record(key):
 def api_latest(key):
     open_db()
     ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+    ua = request.user_agent.string
     resp = {}
     try:
-        durs = query_latest(key, ip)
+        durs = query_latest(key, ip, ua)
         resp["status"] = "OK"
         resp["keys"] = key
         resp["durs"] = durs
@@ -222,8 +225,8 @@ def api_latest(key):
     close_db();
     return jsonify(resp)
 
-def query_latest(key, ip, now=None):
-    cond = "\"key\"='%s' and \"ip\"='%s'" % (key, ip)
+def query_latest(key, ip, ua, now=None):
+    cond = "\"key\"='%s' and \"ip\"='%s' and \"ua\"='%s'" % (key, ip, ua)
     if now is not None:
         cond += " and \"time\" < %d" % now
     only1 = "order by time desc limit 1"
