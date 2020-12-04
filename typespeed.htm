@@ -6,7 +6,7 @@
     <meta name="description" content="Typing speed test online, A to Z, with rank in 10 seconds" />
     <meta
       name="keywords"
-      content="Typing test, Typing speed test, Typing speed game, a to z,
+      content="Typing test, Typing speed test, Typing speed game, 打字比赛, a to z,
     abcdefghijklmnopqrstuvwxyz, Typing quick test"
     />
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
@@ -63,7 +63,7 @@
         font-size: 28vh;
         color: #fdd;
       }
-      #rank {
+      #ext-msg {
         font-size: 7vh;
         color: #ecc;
       }
@@ -260,7 +260,7 @@
       function onHitKey(key, ts) {
         $("#main-msg").text(key);
         $("#rpt-time").text("");
-        $("#rank").text("");
+        $("#ext-msg").text("");
         if (key == target.charAt(0)) {
           resetStatus();
           saveKey(key, 0);
@@ -314,7 +314,7 @@
             if (dur) {
               msg += " (Record: " + (dur / 1000.0).toFixed(2) + "s)";
             }
-            $("#rank").text(msg);
+            $("#ext-msg").text(msg);
           },
         });
       }
@@ -335,7 +335,7 @@
         $("#version").text(version);
         $("#target").prop("disabled", true);
         $("#target").val(target);
-        $("#rank").text(hello2);
+        $("#ext-msg").text(hello2);
 
         //debug saveScore("abcd", [0, 100, 200, 300]);
         initColor();
@@ -379,13 +379,13 @@
   </head>
   <body>
     Target:
-    <input type="text" id="target" name="target" size="28" />
+    <input type="text" id="target" name="target" />
     <input type="button" id="change" name="change" value="Change" />
     <div id="chart-div">
       <canvas id="hit-chart"></canvas>
     </div>
     <div id="main-msg"></div>
-    <div id="rank"></div>
+    <div id="ext-msg"></div>
     <div id="rpt-time"></div>
     <div id="version"></div>
   </body>
