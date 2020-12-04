@@ -56,7 +56,7 @@
       #hit-chart {
         width: 80vw !important;
         height: 35vh !important;
-        min-width: 480px;
+        min-width: 360px;
         margin: auto;
       }
       #main-msg {
@@ -87,8 +87,8 @@
       crossorigin="anonymous"
     ></script>
     <script>
-      const version = "Ver 1.1 by LobLab 11/30/2020";
-      var target = "abcdefghijklmnopqrstuvwxyz";
+      const version = "Ver 1.2 by LobLab 12/4/2020";
+      const atoz = "abcdefghijklmnopqrstuvwxyz";
       var inputKeys = "";
       var inputDurs = [];
       var prevTs = 0;
@@ -96,8 +96,8 @@
       var latestSeries = 0;
       var recordSeries = 0;
 
-      var keyGroup = ["1qaz", "2wsx", "3edc", "4rfv5tgb", "6yhn7ujm", "8ik,", "9ol.", "0p;/", " "];
-      var colorGroup = [
+      const keyGroup = ["1qaz", "2wsx", "3edc", "4rfv5tgb", "6yhn7ujm", "8ik,", "9ol.", "0p;/", " "];
+      const colorGroup = [
         "rgba(180, 99, 112, 0.5)",
         "rgba(205, 99, 112, 0.6)",
         "rgba(230, 99, 112, 0.7)",
@@ -320,15 +320,28 @@
       }
 
       $(function () {
+        let mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        let hello1, hello2;
+        if (mobile) {
+          target = "Run on PC";
+          hello1 = "Run on PC";
+          hello2 = "电脑上玩";
+        } else {
+          target = atoz;
+          hello1 = "Type till match Target";
+          hello2 = "直接击键";
+        }
+
         $("#version").text(version);
         $("#target").prop("disabled", true);
         $("#target").val(target);
+        $("#rank").text(hello2);
 
         //debug saveScore("abcd", [0, 100, 200, 300]);
         initColor();
         initChart();
         setAxesFont();
-        welcome("Type till match Target");
+        welcome(hello1);
         //debug drawSeries(1, [100, 80, 90, 50, 50, 60]);
         //debug drawSeries(2, [40, 60, 30, 20, 30, 40]);
 
