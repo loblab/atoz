@@ -9,7 +9,7 @@ from influxdb import InfluxDBClient
 
 app = Flask(__name__)
 db = None
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.WARNING)
 
 DB_NAME = "atoz"
 TAB_NAME = "score"
