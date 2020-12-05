@@ -14,6 +14,9 @@ logging.basicConfig(level=logging.WARNING)
 
 DB_NAME = "atoz"
 TAB_NAME = "score"
+RECENT = "1d"
+
+TIME_FILTER = " and (time > now() - %s)" % RECENT
 
 # App is behind one proxy that sets the -For and -Host headers.
 #app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_host=1)
@@ -166,9 +169,10 @@ def api_rank(key, dur):
     return jsonify(resp)
 
 def query_rank(key, dur):
-    cond = "\"key\"='%s'" % key
+    cond = "(\"key\"='%s')" % key
+    cond += TIME_FILTER
     total = count_db(cond)
-    cond += " and \"val\"<=%s" % dur
+    cond += " and (\"val\"<=%s)" % dur
     rank = count_db(cond)
     return (rank, total)
 
@@ -190,7 +194,8 @@ def api_record(key):
     return jsonify(resp)
 
 def query_record(key):
-    cond = "\"key\"='%s'" % key
+    cond = "(\"key\"='%s')" % key
+    cond += TIME_FILTER
     q = "select min(\"val\") as dur from %s where %s" % (TAB_NAME, cond)
     r = query_db(q)
     points = r.get_points()
