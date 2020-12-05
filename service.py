@@ -6,6 +6,7 @@ from flask import send_file
 from flask import jsonify, request
 import logging
 from influxdb import InfluxDBClient
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 app = Flask(__name__)
 db = None
@@ -13,6 +14,11 @@ logging.basicConfig(level=logging.WARNING)
 
 DB_NAME = "atoz"
 TAB_NAME = "score"
+
+# App is behind one proxy that sets the -For and -Host headers.
+#app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_host=1)
+# https://flask.palletsprojects.com/_/downloads/en/1.1.x/pdf/
+app.wsgi_app = ProxyFix(app.wsgi_app)
 
 def open_db():
     global db
