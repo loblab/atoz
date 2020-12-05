@@ -51,8 +51,6 @@
         font-size: 2.2vh;
         padding: 2px;
       }
-      #chart-div {
-      }
       #hit-chart {
         width: 80vw !important;
         height: 35vh !important;
@@ -87,7 +85,7 @@
       crossorigin="anonymous"
     ></script>
     <script>
-      const version = "Ver 1.2 by LobLab 12/4/2020";
+      const version = "Ver 1.3 by LobLab 12/5/2020";
       const atoz = "abcdefghijklmnopqrstuvwxyz";
       var inputKeys = "";
       var inputDurs = [];
@@ -120,7 +118,6 @@
             keyColor[ch] = color;
           }
         }
-        //console.log(keyColor);
       }
 
       function formatDate(date) {
@@ -135,7 +132,6 @@
       function setAxesFont() {
         let w = $(window).width();
         let h = $(window).height();
-        //console.log("Resize: " + w + " x " + h);
         hitChart.options.scales.xAxes[0].ticks.fontSize = Math.min(w / 32, h / 16);
         hitChart.options.scales.yAxes[0].ticks.fontSize = Math.min(w / 48, h / 40);
       }
@@ -278,7 +274,6 @@
 
       function report() {
         let dur = 0;
-        //console.log(inputDurs);
         for (let d of inputDurs) {
           dur += d;
         }
@@ -299,7 +294,6 @@
           contentType: "application/json",
           type: "POST",
           success: function (data) {
-            //console.log(data);
             let msg = "Rank: " + data.rank + "/" + data.samples;
             let dur = 0;
             if (data.record) {
@@ -317,6 +311,12 @@
             $("#ext-msg").text(msg);
           },
         });
+      }
+
+      function resizeInput() {
+        let s = $(this).val().length;
+        if (s < 2) s = 2;
+        $(this).attr('size', s);
       }
 
       $(function () {
@@ -337,13 +337,30 @@
         $("#target").val(target);
         $("#ext-msg").text(hello2);
 
-        //debug saveScore("abcd", [0, 100, 200, 300]);
         initColor();
         initChart();
         setAxesFont();
         welcome(hello1);
-        //debug drawSeries(1, [100, 80, 90, 50, 50, 60]);
-        //debug drawSeries(2, [40, 60, 30, 20, 30, 40]);
+
+        $(window).keypress(function (e) {
+          if (e.target.id == "target") {
+            if (e.key === "Enter" || e.keyCode === 13) {
+              $("#target").prop("disabled", true);
+              $("#target").blur();
+              target = $("#target").val();
+            }
+            return;
+          }
+          onHitKey(e.key, e.timeStamp);
+        });
+
+        $(window).resize(setAxesFont);
+
+        $('input[type="text"]')
+          // event handler
+          .keyup(resizeInput)
+          // resize on page load
+          .each(resizeInput);
 
         $("#target").change(function () {
           target = $("#target").val();
@@ -359,29 +376,16 @@
           $("#target").select();
         });
 
-        $(window).keypress(function (e) {
-          //console.log(e);
-          if (e.target.id == "target") {
-            if (e.key === "Enter" || e.keyCode === 13) {
-              $("#target").prop("disabled", true);
-              $("#target").blur();
-              target = $("#target").val();
-            }
-            return;
-          }
-          onHitKey(e.key, e.timeStamp);
-        });
-
-        $(window).resize(setAxesFont);
-
       });
     </script>
   </head>
   <body>
-    Target:
-    <input type="text" id="target" name="target" />
-    <input type="button" id="change" name="change" value="Change" />
-    <div id="chart-div">
+    <div>
+      Target:
+      <input type="text" id="target" name="target" />
+      <input type="button" id="change" name="change" value="Change" />
+    </div>
+    <div>
       <canvas id="hit-chart"></canvas>
     </div>
     <div id="main-msg"></div>
