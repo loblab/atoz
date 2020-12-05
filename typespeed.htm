@@ -85,7 +85,7 @@
       crossorigin="anonymous"
     ></script>
     <script>
-      const version = "Ver 1.3 by LobLab 12/5/2020";
+      const version = "Ver 1.4 by LobLab 12/5/2020";
       const atoz = "abcdefghijklmnopqrstuvwxyz";
       var inputKeys = "";
       var inputDurs = [];
@@ -114,7 +114,8 @@
         for (let i = 0; i < keyGroup.length; i++) {
           let str = keyGroup[i];
           let color = colorGroup[i];
-          for (let ch of str) {
+          for (let i = 0; i < str.length; i++) {
+            let ch = str[i];
             keyColor[ch] = color;
           }
         }
@@ -215,8 +216,8 @@
       function drawSeries(index, data) {
         let dset = hitChart.data.datasets[index].data;
         dset.push(0);
-        for (let d of data) {
-          dset.push(d / 1000.0);
+        for (let i = 0; i < data.length; i++) {
+          dset.push(data[i] / 1000.0);
         }
         hitChart.update();
       }
@@ -235,16 +236,18 @@
         inputDurs = [];
         inputKeys = "";
         hitChart.data.labels = [];
-        hitChart.data.datasets[0].backgroundColor = [];
-        hitChart.data.datasets.forEach((dataset) => {
-          dataset.data = [];
-        });
+        let dss = hitChart.data.datasets;
+        dss[0].backgroundColor = [];
+        dss[0].data = [];
+        dss[1].data = [];
+        dss[2].data = [];
         hitChart.update();
       }
 
       function welcome(msg) {
         let delay = 0;
-        for (let ch of msg) {
+        for (let i = 0; i < msg.length; i++) {
+          let ch = msg[i];
           let val = ch.charCodeAt();
           delay += val;
           setTimeout(function () {
@@ -274,8 +277,8 @@
 
       function report() {
         let dur = 0;
-        for (let d of inputDurs) {
-          dur += d;
+        for (let i = 0; i < inputDurs.length; i++) {
+          dur += inputDurs[i];
         }
         dur /= 1000.0;
         let msg = dur.toFixed(2) + "s";
@@ -297,9 +300,10 @@
             let msg = "Rank: " + data.rank + "/" + data.samples;
             let dur = 0;
             if (data.record) {
-              drawSeries(recordSeries, data.record);
-              for (let d of data.record) {
-                dur += d;
+              let rec = data.record;
+              drawSeries(recordSeries, rec);
+              for (let i = 0; i < rec.length; i++) {
+                dur += rec[i];
               }
             }
             if (data.latest) {
