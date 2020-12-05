@@ -16,7 +16,7 @@ DB_NAME = "atoz"
 TAB_NAME = "score"
 RECENT = "1d"
 
-TIME_FILTER = " and (time > now() - %s)" % RECENT
+TIME_FILTER = " and time > now() - %s" % RECENT
 
 # App is behind one proxy that sets the -For and -Host headers.
 #app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_host=1)
@@ -136,21 +136,6 @@ def save_score(ts, keys, durs, ip, ua):
     write_db(points)
     return total
 
-def save_record(ts, keys, dur, ip):
-    app.logger.info("Record of %s: %d ms", keys, dur)
-    points = [{
-        "measurement": "record",
-        "time": ts,
-        "tags": {
-            "ip": ip,
-            "key": keys
-        },
-        "fields": {
-            "val": dur
-        }
-    }]
-    write_db(points)
-
 @app.route('/api/rank/<key>/<dur>', methods=['GET'])
 def api_rank(key, dur):
     open_db()
@@ -169,10 +154,10 @@ def api_rank(key, dur):
     return jsonify(resp)
 
 def query_rank(key, dur):
-    cond = "(\"key\"='%s')" % key
+    cond = "\"key\"='%s'" % key
     cond += TIME_FILTER
     total = count_db(cond)
-    cond += " and (\"val\"<=%s)" % dur
+    cond += " and \"val\"<=%s" % dur
     rank = count_db(cond)
     return (rank, total)
 
@@ -194,7 +179,7 @@ def api_record(key):
     return jsonify(resp)
 
 def query_record(key):
-    cond = "(\"key\"='%s')" % key
+    cond = "\"key\"='%s'" % key
     cond += TIME_FILTER
     q = "select min(\"val\") as dur from %s where %s" % (TAB_NAME, cond)
     r = query_db(q)
@@ -229,6 +214,7 @@ def query_latest(key, ip, ua, now=None):
     cond = "\"key\"='%s' and \"ip\"='%s' and \"ua\"='%s'" % (key, ip, ua)
     if now is not None:
         cond += " and \"time\" < %d" % now
+    cond += TIME_FILTER
     only1 = "order by time desc limit 1"
     q = "select val from %s where %s %s" % (TAB_NAME, cond, only1)
     r = query_db(q)
