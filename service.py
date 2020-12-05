@@ -37,11 +37,9 @@ def query_db(q):
 
 def count_db(cond):
     q = "select count(val) from %s where %s" % (TAB_NAME, cond)
-    #app.logger.info(q)
     r = query_db(q)
     points = r.get_points()
     for point in points:
-        #app.logger.info(point)
         return point["count"]
     return 0
 
@@ -62,7 +60,6 @@ def echo():
     req = request.json
     ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
     req["ip"] = ip
-    app.logger.info(req)
     return jsonify(req)
 
 @app.route('/api/score', methods=['POST'])
@@ -96,15 +93,11 @@ def api_put_score():
 def save_score(ts, keys, durs, ip, ua):
     points = []
 
-    #app.logger.info(ip)
-    #app.logger.info(keys)
-    #app.logger.info(durs)
     total = 0
     for i in range(len(durs)):
         key = keys[i:i+2]
         val = int(durs[i])
         total += val
-        #app.logger.info("%s: %d ms", key, val)
         point = {
             "measurement": TAB_NAME,
             "time": ts,
@@ -118,7 +111,6 @@ def save_score(ts, keys, durs, ip, ua):
         }
         points.append(point)
 
-    #app.logger.info("%s: %d ms", keys, total)
     point = {
         "measurement": TAB_NAME,
         "time": ts,
@@ -132,7 +124,6 @@ def save_score(ts, keys, durs, ip, ua):
         }
     }
     points.append(point)
-    #app.logger.info(points)
     write_db(points)
     return total
 
@@ -195,11 +186,9 @@ def api_record(key):
 def query_record(key):
     cond = "\"key\"='%s'" % key
     q = "select min(\"val\") as dur from %s where %s" % (TAB_NAME, cond)
-    #app.logger.debug(q)
     r = query_db(q)
     points = r.get_points()
     for point in points:
-        #app.logger.info(point)
         dur = point["dur"]
         ts = point["time"]
         durs = query_score(ts, key)
@@ -231,11 +220,9 @@ def query_latest(key, ip, ua, now=None):
         cond += " and \"time\" < %d" % now
     only1 = "order by time desc limit 1"
     q = "select val from %s where %s %s" % (TAB_NAME, cond, only1)
-    app.logger.debug(q)
     r = query_db(q)
     points = r.get_points()
     for point in points:
-        app.logger.info(point)
         dur = point["val"]
         ts = point["time"]
         durs = query_score(ts, key)
@@ -245,22 +232,17 @@ def query_latest(key, ip, ua, now=None):
 def query_score(ts, keys):
     cond = " \"time\"='%s'" % ts
     q = "select \"key\", \"val\" from %s where %s" % (TAB_NAME, cond)
-    #app.logger.debug(q)
     r = query_db(q)
     points = r.get_points()
     tmp = {}
     for point in points:
-        #app.logger.debug(point)
         dur = point["val"]
         key = point["key"]
         tmp[key] = dur
-        #app.logger.debug("%s => %d" % (key, dur))
-    #app.logger.debug(tmp)
     durs = []
     for i in range(len(keys) - 1):
         key = keys[i:i+2]
         val = tmp[key]
         durs.append(val)
-    #app.logger.debug(durs)
     return durs
 
