@@ -85,11 +85,13 @@ def api_put_score():
         dur = save_score(ts, keys, req["durs"], ip, ua)
         (rank, samples) = query_rank(keys, dur)
         record = query_record(keys)
+        #limit = stat_keys("min", keys)
         latest = query_latest(keys, ip, ua, ts * 1000)
         resp["samples"] = samples
         resp["rank"] = rank
         resp["record"] = record
         resp["latest"] = latest
+        #resp["limit"] = limit
         resp["status"] = "OK"
     except Exception as e:
         msg = str(e)
@@ -170,6 +172,7 @@ def api_record(key):
         resp["status"] = "OK"
         resp["keys"] = key
         resp["durs"] = durs
+        resp["dur"] = sum(durs)
     except Exception as e:
         msg = str(e)
         app.logger.error(msg)
@@ -242,4 +245,40 @@ def query_score(ts, keys):
         val = tmp[key]
         durs.append(val)
     return durs
+
+def stat_key(func, key):
+    cond = "\"key\"='%s'" % key
+    q = "select %s(\"val\") as dur from %s where %s" % (func, TAB_NAME, cond)
+    r = query_db(q)
+    points = r.get_points()
+    for point in points:
+        dur = point["dur"]
+        return dur
+    return None
+
+def stat_keys(func, keys):
+    durs = []
+    for i in range(len(keys) - 1):
+        key = keys[i:i+2]
+        val = stat_key(func, key)
+        durs.append(val)
+    return durs
+
+@app.route('/api/<func>/<key>', methods=['GET'])
+def api_stat(func, key):
+    open_db()
+    resp = {}
+    try:
+        durs = stat_keys(func, key)
+        resp["status"] = "OK"
+        resp["keys"] = key
+        resp["durs"] = durs
+        resp["dur"] = sum(durs)
+    except Exception as e:
+        msg = str(e)
+        app.logger.error(msg)
+        resp["status"] = "ERR"
+        resp["msg"] = msg
+    close_db();
+    return jsonify(resp)
 
