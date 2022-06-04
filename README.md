@@ -4,7 +4,7 @@ How fast can you type A to Z? [Test online and rank!](https://atoz.loblab.top/)
 
 - Platform: Chrome, Firefox, Safari, IE (old IE may not work well)
 - Ver: 1.6
-- Updated: 12/12/2020
+- Updated: 6/4/2022
 - Created: 11/22/2020
 - Author: loblab
 

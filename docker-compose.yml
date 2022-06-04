@@ -1,9 +1,7 @@
-version: "3.5"
-
 networks:
     default:
-        external:
-            name: homelab
+        external: true
+        name: homelab
 
 services:
     atoz:
