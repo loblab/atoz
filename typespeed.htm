@@ -85,7 +85,7 @@
       crossorigin="anonymous"
     ></script>
     <script>
-      const version = "Ver 1.6 by LobLab 12/6/2020";
+      const version = "Ver 1.7 by LobLab 4/29/2024";
       const atoz = "abcdefghijklmnopqrstuvwxyz";
       var inputKeys = "";
       var inputDurs = [];
@@ -290,6 +290,8 @@
       }
 
       function saveScore(keys, durs) {
+        if (keys.length < 3)
+          return;
         durs.shift();
         let obj = { keys: keys, durs: durs };
         $.ajax("/api/score", {
@@ -297,6 +299,9 @@
           contentType: "application/json",
           type: "POST",
           success: function (data) {
+            if (!(data.rank && data.samples)) {
+              return;
+            }
             let msg = "Rank: " + data.rank + "/" + data.samples;
             let dur = 0;
             if (data.record) {

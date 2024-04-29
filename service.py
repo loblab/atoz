@@ -102,6 +102,10 @@ def api_put_score():
     return jsonify(resp)
 
 def save_score(ts, keys, durs, ip, ua):
+    if len(keys) != len(durs) + 1:
+        raise ValueError("Invalid data")
+    if len(keys) < 3:
+        raise ValueError("Too short data")
     points = []
 
     total = 0
@@ -281,4 +285,3 @@ def api_stat(func, key):
         resp["msg"] = msg
     close_db();
     return jsonify(resp)
-
